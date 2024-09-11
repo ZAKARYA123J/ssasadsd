@@ -66,7 +66,7 @@ export function CompaniesFilters(): React.JSX.Element {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/DateReserve/${selectedOrderId}`, {
+      const response = await fetch(`https://immoceanrepo.vercel.app/api/DateReserve/${selectedOrderId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

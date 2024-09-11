@@ -64,7 +64,7 @@ const [imageCount, setImageCount] = useState(0);
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/posts', {
+      const response = await fetch('https://immoceanrepo.vercel.app/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
