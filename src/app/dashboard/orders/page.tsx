@@ -1,17 +1,10 @@
 "use client";
-import React, { useState, ChangeEvent, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, Stack, Box, Pagination } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { DataContext } from '@/contexts/post';
 import { CompaniesFilters } from '@/components/dashboard/integrations/integrations-filters';
 import AddOrderDialog from '../OrderDialog';
-
-interface Item {
-  id: number;
-  title: string;
-  status: string;
-  category: { name: string };
-}
 
 interface Order {
   id: number;
@@ -24,8 +17,8 @@ interface Order {
 }
 
 export default function Page(): React.ReactElement {
-  const { order, createOrder, updateOrder, loading, error } = useContext(DataContext);
-  
+  const { createOrder, updateOrder } = useContext(DataContext);
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -54,8 +47,8 @@ export default function Page(): React.ReactElement {
       <Button
         startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
         variant="contained"
-        onClick={() => handleOpenDialog(null)} // Passing null to indicate new ord
-        style={{width:'100px'}}
+        onClick={() => handleOpenDialog(null)} // Passing null to indicate new order
+        style={{ width: '100px' }}
       >
         Add
       </Button>

@@ -16,13 +16,12 @@ import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/Arr
 import { useContext } from 'react';
 import { DataContext } from '@/contexts/post'; // Make sure this is the correct path to your DataContext
 import Link from 'next/link';
-import dayjs from 'dayjs';
 
 
 const statusMap = {
-  pending: { label: 'Pending', color: 'warning' },
-  delivered: { label: 'Delivered', color: 'success' },
-  refunded: { label: 'Refunded', color: 'error' },
+  // pending: { label: 'Pending', color: 'warning' },
+  // delivered: { label: 'Delivered', color: 'success' },
+  // refunded: { label: 'Refunded', color: 'error' },
 } as const;
 
 export interface Order {

@@ -1,15 +1,15 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { TextField, Button, Box, Typography, Container, Alert } from '@mui/material';
-import axios from 'axios';
+
 import { useRouter } from 'next/navigation';
-import { useCookies } from 'react-cookie';
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-  const [cookie, setCookie] = useCookies(["token"]);
+
   const router = useRouter();
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +40,7 @@ const Login: React.FC = () => {
       const { token } = data;
   
       // Use react-cookie to set the cookie
-      setCookie('token', token, { path: '/', maxAge: 3600, sameSite: 'strict' });
+   
   
       // Redirect to dashboard
       router.push('/dashboard');

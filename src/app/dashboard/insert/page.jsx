@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextField, Button, Typography, Container, Box, Alert, MenuItem, Select, InputLabel, FormControl,  Grid, Card, CardMedia } from '@mui/material';
 import { DataContext } from '@/contexts/post';
 const CreatePostForm = () => {

@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 
 interface OrderDetailsProps {
   orderId: number;
-  onClose: () => void;
+ 
 }
 
 import { DataContext } from '@/contexts/post';
 
-const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId, onClose }) => {
-  const { data, order } = useContext(DataContext);
+const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
+  const {  order } = useContext(DataContext);
   
   // Filter the orders based on the passed orderId
   const filteredOrder = order?.filter((item) => item.id === orderId);

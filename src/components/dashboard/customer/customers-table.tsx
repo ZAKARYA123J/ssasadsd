@@ -16,8 +16,10 @@ import Typography from '@mui/material/Typography';
 
 import { useSelection } from '@/hooks/use-selection';
 
-function noop(): void {
-  // do nothing
+// Define a more specific type for DateReserve
+export interface DateReserve {
+  reservedDate: Date; // Example field, adjust as needed
+  // Add more fields as needed
 }
 
 export interface Posts {
@@ -60,7 +62,7 @@ export interface Posts {
     documents: string;
     postId: number;
   };
-  DateReserve: any[];
+  DateReserve: DateReserve[]; // Use the new type here
 }
 
 interface CustomersTableProps {
@@ -80,10 +82,7 @@ export function CustomersTable({
     return rows.map((post) => post.id.toString());
   }, [rows]);
 
-  const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
-
-  const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
-  const selectedAll = rows.length > 0 && selected?.size === rows.length;
+  const { selected } = useSelection(rowIds);
 
   return (
     <Card>
@@ -131,8 +130,8 @@ export function CustomersTable({
       <TablePagination
         component="div"
         count={count}
-        onPageChange={noop}
-        onRowsPerPageChange={noop}
+        onPageChange={() => {}} // Implement pagination logic if needed
+        onRowsPerPageChange={() => {}} // Implement rows per page logic if needed
         page={page}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
