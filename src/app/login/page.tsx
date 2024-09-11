@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
@@ -30,13 +30,18 @@ const Login: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        mode: 'no-cors',
       });
-
-      // Note: With 'no-cors', you cannot access the response body or headers.
-      // Assuming the login is successful, you can manually set a cookie.
-      document.cookie = `token=${JSON.stringify(response)}; path=/; max-age=3600; samesite=strict`;
-
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+      const { token } = data;
+  
+      // Use react-cookie to set the cookie
+      setCookie('token', token, { path: '/', maxAge: 3600, sameSite: 'strict' });
+  
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (error) {
@@ -44,7 +49,7 @@ const Login: React.FC = () => {
       console.error('Login failed:', error);
     }
   };
-
+  
 
   return (
     <Container maxWidth="xs">

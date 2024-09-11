@@ -33,9 +33,13 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId, onClose }) => {
             {/* Display the order details */}
             <p><strong>Order Created At:</strong> {formatDate(item.createdAt)}</p>
             <p><strong>Order Updated At:</strong> {formatDate(item.updatedAt)}</p>
-            <p><strong>Post Title:</strong> {item.post.title}</p>
-            <p><strong>Post Status:</strong> {item.post.status}</p>
-            <p><strong>Post Adress:</strong> {item.post.adress}</p>
+            {item.post && (
+  <>
+    {item.post.title && <p><strong>Post Title:</strong> {item.post.title}</p>}
+    {item.post.status && <p><strong>Post Status:</strong> {item.post.status}</p>}
+    {item.post.adress && <p><strong>Post Address:</strong> {item.post.adress}</p>}
+  </>
+)}
             {/* Add more details as needed */}
           </div>
         ))

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, ChangeEvent } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,9 +13,10 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
 import { DataContext } from '@/contexts/post'; // Adjust the path accordingly
 import OrderDetails from './OrderDetails'; // Adjust the path accordingly
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 interface Post {
   id: number;
@@ -48,8 +49,9 @@ export function CompaniesFilters(): React.JSX.Element {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false); // Add state for confirmation dialog
-  const router = useRouter(); // Initialize useRouter
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const router = useRouter();
 
   const handleView = (orderId: number) => {
     setSelectedOrderId(orderId);
@@ -75,31 +77,38 @@ export function CompaniesFilters(): React.JSX.Element {
         throw new Error('Network response was not ok');
       }
 
-      // Handle successful delete, e.g., updating the UI
       console.log('Item deleted successfully');
       // Optionally refresh the orders list
-      // You might want to update the state to reflect the deletion
     } catch (err) {
       console.log(err.message);
     } finally {
       setIsDeleting(false);
-      setConfirmDeleteOpen(false); // Close confirmation dialog
+      setConfirmDeleteOpen(false);
     }
   };
 
   const handleDeleteClick = (orderId: number) => {
     setSelectedOrderId(orderId);
-    setConfirmDeleteOpen(true); // Open confirmation dialog
+    setConfirmDeleteOpen(true);
   };
 
   const handleCloseConfirmation = () => {
-    setConfirmDeleteOpen(false); // Close confirmation dialog
+    setConfirmDeleteOpen(false);
     setSelectedOrderId(null);
   };
 
   const handleUpdate = (orderId: number) => {
-    router.push(`/dashboard/updateorder/${orderId}`); // Redirect to the update page
+    router.push(`/dashboard/updateorder/${orderId}`);
   };
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredOrders = order.filter((order: Order) =>
+    order.id.toString().includes(searchQuery) || 
+    order.CIN.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return <CircularProgress />;
@@ -111,6 +120,15 @@ export function CompaniesFilters(): React.JSX.Element {
 
   return (
     <div>
+      <TextField
+        label="Search Orders: Id CIN"
+        variant="outlined"
+        fullWidth
+        value={searchQuery}
+        onChange={handleSearchChange}
+        // placeholder="Search by customer name or CIN"
+        style={{ marginBottom: '20px' }}
+      />
       <Card>
         <TableContainer component={Paper}>
           <Table>
@@ -126,7 +144,7 @@ export function CompaniesFilters(): React.JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
-              {order.map((order: Order) => (
+              {filteredOrders.map((order: Order) => (
                 <TableRow key={order.id}>
                   <TableCell component="th" scope="row">
                     ORD-{order.id}
@@ -143,7 +161,7 @@ export function CompaniesFilters(): React.JSX.Element {
                     <Button
                       variant="contained"
                       color="secondary"
-                      onClick={() => handleDeleteClick(order.id)} // Trigger confirmation dialog
+                      onClick={() => handleDeleteClick(order.id)}
                       style={{ marginLeft: '10px' }}
                       disabled={isDeleting}
                     >

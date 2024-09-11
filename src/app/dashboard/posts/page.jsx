@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { 
   Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow, Paper, Button, IconButton,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle 
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle ,TextField
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -17,7 +17,7 @@ import { DataContext } from '@/contexts/post';
 import { useRouter } from 'next/navigation';
 import { MdAddCard } from "react-icons/md";
 import AddOrderDialog from '../OrderDialog';
-import SearchPost from "./SearchPost"
+
 const DataTable = () => {
   const { data, loading, error } = useContext(DataContext);
   const router = useRouter();
@@ -26,10 +26,13 @@ const DataTable = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false); // State for AddOrderDialog
   const [selectedPostId, setSelectedPostId] = useState(""); // State for selected postId
+  const [searchTerm, setSearchTerm] = useState(''); // Search input state
+  const [filteredData, setFilteredData] = useState([]); // State for search results
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setFilteredData(data); // Initialize filtered data with the original data
+  }, [data]);
 
   if (!mounted) return null;
 
@@ -43,43 +46,33 @@ const DataTable = () => {
     setSelectedId(null);
   };
 
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/posts/${selectedId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-  
-      console.log('Delete successful');
-      // Update the UI after deletion
-      setData((prevData) => prevData.filter(item => item.id !== selectedId));
-      handleClose(); // Close the dialog after deletion
-  
-    } catch (error) {
-      console.error('Failed to delete item:', error);
-    }
+  const handleSearch = () => {
+    const searchData = data.filter((item) =>
+      item.id.toString().includes(searchTerm) ||  // Search by ID
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.adress.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.ville.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(searchData); // Update the filtered data based on the search term
   };
+
+  const handleDelete = async () => {
+    setFilteredData((prevData) => prevData.filter(item => item.id !== selectedId));
+    handleClose(); // Close the dialog after deletion
+  };
+
   const handleUpdate = (id) => {
     router.push(`/dashboard/update/${id}`);
   };
 
   const handleDetail = (id, Detail) => {
     if (Detail) {
-      // If the detail exists, redirect to the show page
       router.push(`/dashboard/show/${id}`);
     } else {
-      // If the detail does not exist, redirect to the create page
       router.push(`/dashboard/detail/${id}`);
     }
   };
-  
-
 
   const handleAddOrder = (postId) => {
     setSelectedPostId(postId);
@@ -119,7 +112,16 @@ const DataTable = () => {
 
   return (
     <>
-    <SearchPost/>
+      <div style={{ textAlign: 'left', marginBottom: "10px" }}>
+        <TextField 
+          label="Search" 
+          variant="outlined" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          fullWidth
+        />
+        <Button variant="contained" onClick={handleSearch} style={{ marginTop: "10px" }}>Search</Button>
+      </div>
       <div style={{ textAlign: 'right', marginBottom: "10px" }}>
         <Link href="/dashboard/insert" passHref>
           <Button variant="contained">Add <FaPlus style={{ marginLeft: "2px" }} /></Button>
@@ -129,6 +131,7 @@ const DataTable = () => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>ID</TableCell>
               <TableCell>Title</TableCell>
               <TableCell>Address</TableCell>
               <TableCell>City</TableCell>
@@ -139,30 +142,33 @@ const DataTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Array.isArray(data) && data.length > 0 ? (
-              data.map((row) => (
+            {Array.isArray(filteredData) && filteredData.length > 0 ? (
+              filteredData.map((row) => (
                 <TableRow key={row.id}>
+                  <TableCell>{row.id}</TableCell> {/* Displaying ID */}
                   <TableCell>{row.title}</TableCell>
                   <TableCell>{row.adress}</TableCell>
                   <TableCell>{row.ville}</TableCell>
                   <TableCell>{row.category?.name || 'N/A'}</TableCell>
                   <TableCell>{getStatusIcon(row.status)}</TableCell>
-                  <TableCell >
-  {row.DateReserve ? (
-    <span style={{ color: 'black' }}>ordered</span>
-  ) : (
-    <IconButton onClick={() => handleAddOrder(row.id)}>
-      <MdAddCard fontSize={25} style={{color:"#1e90ff"}} />
-    </IconButton>
-  )}
-</TableCell>
-
-                  <TableCell >
+                  <TableCell>
+                    {row.status === "taken" ? (
+                      row.DateReserve ? (
+                        <span style={{ color: 'black' }}>Ordered</span>
+                      ) : (
+                        <span style={{ color: 'red' }}>Has been taken</span>
+                      )
+                    ) : (
+                      <IconButton onClick={() => handleAddOrder(row.id)}>
+                        <MdAddCard fontSize={25} style={{ color: "#1e90ff" }} />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <IconButton onClick={() => handleDetail(row.id, row.Detail)}>
-  <InfoIcon />
-</IconButton>
-
+                      <IconButton onClick={() => handleDetail(row.id, row.Detail)}>
+                        <InfoIcon />
+                      </IconButton>
                       <IconButton onClick={() => handleUpdate(row.id)} color="primary">
                         <EditIcon />
                       </IconButton>
@@ -175,7 +181,7 @@ const DataTable = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7}>No data available</TableCell>
+                <TableCell colSpan={8}>No data available</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -205,11 +211,10 @@ const DataTable = () => {
       </Dialog>
 
       <AddOrderDialog 
-  open={dialogOpen} 
-  onClose={() => setDialogOpen(false)} 
-  selectedPostId={selectedPostId || undefined} 
-/>
-
+        open={dialogOpen} 
+        onClose={() => setDialogOpen(false)} 
+        selectedPostId={selectedPostId || undefined} 
+      />
     </>
   );
 };
