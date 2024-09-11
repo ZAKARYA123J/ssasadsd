@@ -6,9 +6,10 @@ interface AddOrderDialogProps {
   open: boolean;
   onClose: () => void;
   selectedPostId?: string; // Optional prop to accept postId from another component
+  category:string
 }
 
-const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ open, onClose, selectedPostId }) => {
+const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ open, onClose, selectedPostId,category }) => {
   const [newCustomer, setNewCustomer] = useState({
     fullName: '',
     dateDebut: '',
@@ -18,7 +19,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ open, onClose, selected
     postId: selectedPostId || '' // Initialize with selectedPostId if provided
   });
   const { data } = useContext(DataContext);
-
+// console.log(category)
   useEffect(() => {
     if (selectedPostId) {
       setNewCustomer(prevState => ({
@@ -80,28 +81,34 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ open, onClose, selected
           value={newCustomer.fullName}
           onChange={handleChange}
         />
-        <TextField
-          margin="dense"
-          label="dateDebut"
-          name="dateDebut"
-          type="date"
-          fullWidth
-          variant="outlined"
-          value={newCustomer.dateDebut}
-          onChange={handleChange}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          margin="dense"
-          label="dateFine"
-          name="dateFine"
-          type="date"
-          fullWidth
-          variant="outlined"
-          value={newCustomer.dateFine}
-          onChange={handleChange}
-          InputLabelProps={{ shrink: true }}
-        />
+          {category == "Location" && (
+            <>
+            <TextField
+            margin="dense"
+            label="dateDebut"
+            name="dateDebut"
+            type="date"
+            fullWidth
+            variant="outlined"
+            value={newCustomer.dateDebut}
+            onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
+          />
+        
+          <TextField
+            margin="dense"
+            label="dateFine"
+            name="dateFine"
+            type="date"
+            fullWidth
+            variant="outlined"
+            value={newCustomer.dateFine}
+            onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
+          />
+          </>
+          )}
+        
         <TextField
           margin="dense"
           label="CIN"

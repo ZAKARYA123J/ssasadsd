@@ -28,7 +28,7 @@ const DataTable = () => {
   const [selectedPostId, setSelectedPostId] = useState(""); // State for selected postId
   const [searchTerm, setSearchTerm] = useState(''); // Search input state
   const [filteredData, setFilteredData] = useState([]); // State for search results
-
+  const [selectedPostCategory, setSelectedPostCategory] = useState("");
   useEffect(() => {
     setMounted(true);
     setFilteredData(data); // Initialize filtered data with the original data
@@ -74,9 +74,10 @@ const DataTable = () => {
     }
   };
 
-  const handleAddOrder = (postId) => {
+  const handleAddOrder = (postId,category) => {
     setSelectedPostId(postId);
     setDialogOpen(true);
+    setSelectedPostCategory(category);
   };
 
   const getStatusIcon = (status) => {
@@ -112,6 +113,11 @@ const DataTable = () => {
 
   return (
     <>
+      <div style={{ textAlign: 'right', marginBottom: "10px" }}>
+        <Link href="/dashboard/insert" passHref>
+          <Button variant="contained">Add <FaPlus style={{ marginLeft: "2px" }} /></Button>
+        </Link>
+      </div>
       <div style={{ textAlign: 'left', marginBottom: "10px" }}>
         <TextField 
           label="Search" 
@@ -122,11 +128,7 @@ const DataTable = () => {
         />
         <Button variant="contained" onClick={handleSearch} style={{ marginTop: "10px" }}>Search</Button>
       </div>
-      <div style={{ textAlign: 'right', marginBottom: "10px" }}>
-        <Link href="/dashboard/insert" passHref>
-          <Button variant="contained">Add <FaPlus style={{ marginLeft: "2px" }} /></Button>
-        </Link>
-      </div>
+    
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -159,9 +161,9 @@ const DataTable = () => {
                         <span style={{ color: 'red' }}>Has been taken</span>
                       )
                     ) : (
-                      <IconButton onClick={() => handleAddOrder(row.id)}>
-                        <MdAddCard fontSize={25} style={{ color: "#1e90ff" }} />
-                      </IconButton>
+                      <IconButton onClick={() => handleAddOrder(row.id, row.category?.name)}>
+                      <MdAddCard fontSize={25} style={{ color: "#1e90ff" }} />
+                    </IconButton>
                     )}
                   </TableCell>
                   <TableCell>
@@ -213,6 +215,7 @@ const DataTable = () => {
       <AddOrderDialog 
         open={dialogOpen} 
         onClose={() => setDialogOpen(false)} 
+        category={selectedPostCategory} 
         selectedPostId={selectedPostId || undefined} 
       />
     </>
