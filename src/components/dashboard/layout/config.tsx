@@ -13,19 +13,20 @@ export const navItems: NavItemConfig[] = [
   // { key: 'error', title: 'Error', href: '/errors/notFound', icon: 'x-square' },
 ];
 
-// Define the navigation component
 const Navigation: React.FC = () => {
   return (
     <nav>
       <ul>
         {navItems.map(({ key, title, href, icon }) => (
-          <li key={key}>
-            <Link href={href}>
-              <a>
-                <i className={`icon-${icon}`} /> {title}
-              </a>
-            </Link>
-          </li>
+          href && (
+            <li key={key}>
+              <Link href={href}>
+                <a>
+                  <i className={`icon-${icon}`} /> {title}
+                </a>
+              </Link>
+            </li>
+          )
         ))}
       </ul>
     </nav>

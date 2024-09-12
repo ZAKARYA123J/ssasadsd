@@ -1,28 +1,29 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+
+import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container, Alert } from '@mui/material';
-
 import { useRouter } from 'next/navigation';
+import { useCookies } from 'react-cookie';
 
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-
+  const [cookies, setCookie] = useCookies(['authToken']);
   const router = useRouter();
-
-  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+console.log(cookies)
+  const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
 
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-  
+    
     try {
       const response = await fetch('https://immoceanrepo.vercel.app/api/login', {
         method: 'POST',
@@ -39,8 +40,8 @@ const Login: React.FC = () => {
       const data = await response.json();
       const { token } = data;
   
-      // Use react-cookie to set the cookie
-   
+      // Set the token into cookies
+      setCookie('authToken', token, { path: '/' });
   
       // Redirect to dashboard
       router.push('/dashboard');
@@ -49,7 +50,6 @@ const Login: React.FC = () => {
       console.error('Login failed:', error);
     }
   };
-  
 
   return (
     <Container maxWidth="xs">
@@ -104,4 +104,4 @@ const Login: React.FC = () => {
   );
 }
 
-export default Login;
+export default Login;

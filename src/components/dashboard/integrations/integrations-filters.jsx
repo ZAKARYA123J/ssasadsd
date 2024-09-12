@@ -1,4 +1,4 @@
-import React, { useContext, useState, ChangeEvent } from 'react';
+import React, { useContext, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,42 +18,16 @@ import { DataContext } from '@/contexts/post'; // Adjust the path accordingly
 import OrderDetails from './OrderDetails'; // Adjust the path accordingly
 import { useRouter } from 'next/navigation';
 
-interface Post {
-  id: number;
-  img: string[];
-  datePost: string;
-  lat: number;
-  lon: number;
-  prix: number;
-  adress: string;
-  ville: string;
-  status: string;
-  title: string;
-  categoryId: number;
-  typeId: number;
-}
-
-interface Order {
-  id: number;
-  fullName: string;
-  dateDebut: string;
-  dateFine: string | null;
-  CIN: string;
-  price: string;
-  postId: number;
-  post: Post;
-}
-
-export function CompaniesFilters(): React.JSX.Element {
+function CompaniesFilters() {
   const { order, loading, error } = useContext(DataContext);
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
-  const handleView = (orderId: number) => {
+  const handleView = (orderId) => {
     setSelectedOrderId(orderId);
     setOpen(true);
   };
@@ -80,14 +54,14 @@ export function CompaniesFilters(): React.JSX.Element {
       console.log('Item deleted successfully');
       // Optionally refresh the orders list
     } catch (err) {
-      console.log(err.message);
+      console.log("Error deleting item");
     } finally {
       setIsDeleting(false);
       setConfirmDeleteOpen(false);
     }
   };
 
-  const handleDeleteClick = (orderId: number) => {
+  const handleDeleteClick = (orderId) => {
     setSelectedOrderId(orderId);
     setConfirmDeleteOpen(true);
   };
@@ -97,15 +71,15 @@ export function CompaniesFilters(): React.JSX.Element {
     setSelectedOrderId(null);
   };
 
-  const handleUpdate = (orderId: number) => {
+  const handleUpdate = (orderId) => {
     router.push(`/dashboard/updateorder/${orderId}`);
   };
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const filteredOrders = order.filter((order: Order) =>
+  const filteredOrders = order.filter((order) =>
     order.id.toString().includes(searchQuery) || 
     order.CIN.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -126,7 +100,6 @@ export function CompaniesFilters(): React.JSX.Element {
         fullWidth
         value={searchQuery}
         onChange={handleSearchChange}
-        // placeholder="Search by customer name or CIN"
         style={{ marginBottom: '20px' }}
       />
       <Card>
@@ -144,7 +117,7 @@ export function CompaniesFilters(): React.JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredOrders.map((order: Order) => (
+              {filteredOrders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell component="th" scope="row">
                     ORD-{order.id}
@@ -211,3 +184,4 @@ export function CompaniesFilters(): React.JSX.Element {
     </div>
   );
 }
+export default CompaniesFilters
